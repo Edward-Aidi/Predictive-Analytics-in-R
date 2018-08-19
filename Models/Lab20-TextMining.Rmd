@@ -1,0 +1,162 @@
+---
+title: "Lab20-Text Mining"
+author: "DuraiSundaramoorthi"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```
+library(tm)
+
+# define vector of sentences ("docs")
+
+text <- c("this is the first in the sentence.", "this is the first sentence.", "this is a second Sentence.", "the third sentence is here")
+
+# convert sentences into a corpus
+
+corp <- Corpus(VectorSource(text))
+
+# compute term frequency
+
+tdm <- TermDocumentMatrix(corp)
+
+inspect(tdm)
+
+
+
+text <- c("this is the first      sentence @", "this is a second Sentence :)", "the third sentence, is here", "forth of all sentences")
+
+corp <- Corpus(VectorSource(text))
+
+tdm <- TermDocumentMatrix(corp)
+
+inspect(tdm)
+
+
+
+
+# tokenization
+
+corp <- tm_map(corp, stripWhitespace)
+
+corp <- tm_map(corp, removePunctuation)
+
+tdm <- TermDocumentMatrix(corp)
+
+inspect(tdm)
+
+
+# stopwords
+
+stopwords("english")
+
+corp <- tm_map(corp, removeWords, stopwords("english"))
+
+
+
+# stemming ##install snowballC
+
+corp <- tm_map(corp, stemDocument)
+
+tdm <- TermDocumentMatrix(corp)
+
+inspect(tdm)
+
+#Term Frequency - Inverse Document Frequency
+
+tfidf <- weightTfIdf(tdm)
+
+inspect(tfidf)
+
+
+```
+
+```
+library(tm)
+
+# step 1: import and label records
+# read zip file into a corpus
+
+corp <- Corpus(ZipSource("C:/MKT500S/AutoAndElectronics.zip", recursive = T))
+
+
+
+# create an array of records labels
+
+label <- c(rep(1, 1000), rep(0, 1000))
+
+
+
+# step 2: text preprocessing
+# tokenization
+
+corp <- tm_map(corp, stripWhitespace)
+
+corp <- tm_map(corp, removePunctuation)
+
+corp <- tm_map(corp, removeNumbers)
+
+
+# stopwords
+
+##unknown error 
+
+corp <- tm_map(corp, removeWords, stopwords("english"))
+
+# stemming
+
+corp <- tm_map(corp, stemDocument)
+
+# step 3: TF-IDF and latent semantic analysis
+# compute TF-IDF
+
+tdm <- TermDocumentMatrix(corp)
+
+tfidf <- weightTfIdf(tdm)
+
+# extract (20) concepts
+
+library(lsa)
+
+lsa.tfidf <- lsa(tfidf, dim = 20)
+
+# convert to data frame
+
+words.df <- as.data.frame(as.matrix(lsa.tfidf$dk))
+
+
+# sample 60% training data
+
+training <- sample(c(1:2000), 0.6*2000)
+
+
+# run logistic model on training
+
+trainData = cbind(label = label[training], words.df[training,])
+
+reg <- glm(label ~ ., data = trainData, family = 'binomial')
+
+
+
+# compute accuracy on validation set
+
+validData = cbind(label = label[-training], words.df[-training,])
+
+probs <- predict(reg, newdata = validData, type = "response")
+
+predictions = rep("0", dim(validData)[1])
+
+
+predictions[probs>0.5] = "1"
+
+
+table(predictions,label[-training])
+
+mean(predictions == label[-training])
+
+```
+
+

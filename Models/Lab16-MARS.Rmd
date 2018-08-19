@@ -1,0 +1,53 @@
+---
+title: "Lab16 - MARS"
+author: "DuraiSundaramoorthi"
+output: pdf_document
+---
+
+```
+library(earth)
+
+Concrete <- read.csv("C:/MKT500S/Concrete.csv")
+
+names(Concrete)
+
+model = earth(Concrete[,-9], Concrete[,9], degree=2)
+
+plotmo(model)
+
+summary(model)
+
+
+library(MASS)
+
+dim(Boston)
+
+set.seed(1)
+
+train = sample(nrow(Boston),0.5*nrow(Boston))
+
+train.medv = Boston[train,14]
+
+train.medv
+
+test.medv = Boston[-train,14]
+
+test.medv
+
+model = earth(Boston[train,-14], train.medv, degree=1)
+
+plotmo(model)
+
+summary(model)
+
+predict.medv = predict(model,newdata=Boston[-train,-14])
+
+predict.medv
+
+mean((predict.medv-test.medv)^2)
+
+
+
+
+```
+

@@ -1,0 +1,191 @@
+---
+title: "Lab3"
+author: "DuraiSundaramoorthi"
+output: pdf_document
+---
+
+## 3.6.2 Simple Linear Regression
+
+```
+library(MASS)
+library(ISLR)
+
+fix(Boston)
+names(Boston)
+
+##calling lm function without mentioning data set
+
+lm.fit=lm(medv~lstat)
+
+## Proper way to call lm()
+
+lm.fit=lm(medv~lstat, data = Boston)
+
+attach(Boston)
+
+##attaching lets use lm without referencing to the data set
+
+lm.fit=lm(medv~lstat)
+
+##basic information about the model output
+
+lm.fit
+
+##more information about the model output
+
+summary(lm.fit)
+
+##other information in lm.fit
+
+names(lm.fit)
+lm.fit$coefficients
+
+##explicitly asking for co-efficients in lm.fit
+
+coef(lm.fit)
+confint(lm.fit)
+
+##confidence interval and prediction interval for medv at a value of lstat
+
+predict(lm.fit,data.frame(lstat=c(5,10,15)),interval="confidence")
+predict(lm.fit,data.frame(lstat=c(5,10,15)),interval="prediction")
+
+##plot the fitted model
+
+plot(lstat,medv)
+abline(lm.fit)
+
+##lwd - controls width of the line; pch - controls plotting symbols
+
+##line becomes 3 times wider
+
+abline(lm.fit,lwd=3)
+abline(lm.fit,lwd=3,col = "red")
+plot(lstat,medv,col="red")
+plot(lstat,medv,pch=20)
+plot(lstat,medv,pch="+")
+
+plot(1:20,1:20,pch=1:20)
+
+##divide plotting region into 2*2
+
+par(mfrow=c(2,2))
+plot(lm.fit)
+par(mfrow=c(1,1))
+plot(predict(lm.fit),residuals(lm.fit))
+plot(predict(lm.fit),rstudent(lm.fit))
+
+##Leverage
+plot(hatvalues(lm.fit))
+
+##the observation with the largest leverage statistic
+which.max(hatvalues(lm.fit))
+```
+## 3.6.3 Multiple Linear Regression
+
+```
+library(car)
+
+lm.fit=lm(medv~lstat+age,data=Boston)
+summary(lm.fit)
+
+##all predictors
+lm.fit=lm(medv~.,data=Boston)
+summary(lm.fit)
+names(lm.fit)
+
+##Getting R^2
+summary(lm.fit)$r.sq
+
+## Getting RSE
+summary(lm.fit)$sigma
+
+##library car needed to get vif
+vif(lm.fit)
+
+##excluding one variable from the model
+lm.fit1=lm(medv~.-age,data =Boston)
+summary(lm.fit1)
+
+##update can be used to update the model
+lm.fit1=update(lm.fit,~.-age)
+
+```
+
+## 3.6.4 Interaction
+```
+
+summary(lm(medv~lstat*age,data=Boston))
+
+summary(lm(medv~lstat:age,data=Boston))
+
+```
+
+
+## 3.6.5 Non-Linear Transformations
+```
+lm.fit2=lm(medv~lstat+I(lstat^2),data=Boston)
+summary(lm.fit2)
+
+lm.fit=lm(medv~lstat,Data=Boston)
+
+##Ho = both models fit identically
+##Ha = the full model is superior
+
+anova(lm.fit,lm.fit2)
+
+##poly() function for higher order
+##UPTO fifth degree
+lm.fit5=lm(medv~poly(lstat,5))
+summary(lm.fit5)
+
+##log transformation
+summary(lm(medv~log(rm),data=Boston))
+
+```
+
+
+## Qualitative Predictors
+
+```
+
+library(ISLR)
+attach(Carseats)
+?Carseats
+fix(Carseats)
+names(Carseats)
+
+##R generates dummy variables automatically
+lm.fit=lm(Sales~.+Income:Advertising+Price:Age,data = Carseats)
+summary(lm.fit)
+
+##contrasts() function returns the coding that R uses for the dummy variables
+contrasts(ShelveLoc)
+
+```
+
+## 3.6.7 Writing Functions
+
+```
+##Creating a function to load two libraries
+LoadLibraries = function(){
+   library(ISLR)
+   library(MASS)
+   print("The libraries ISLR and MASS have been loaded")
+}
+## following code tells what is inside the function
+LoadLibraries
+
+## following code runs the function
+LoadLibraries()
+
+```
+
+## MyMean()
+
+```
+MyMean = function(a,b){
+  (a+b)/2
+}
+MyMean(2,3)
+```

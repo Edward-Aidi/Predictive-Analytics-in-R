@@ -1,0 +1,81 @@
+---
+title: "Lab19-PCA"
+author: "DuraiSundaramoorthi"
+output: pdf_document
+---
+
+```
+states = row.names(USArrests)
+
+states
+##Column Names
+
+names(USArrests)
+
+##Examine Data
+
+##apply function helps to apply mean function to column (2) or row (1)
+apply(USArrests,2,mean)
+
+##apply variance
+apply(USArrests,2,var)
+
+##PCA
+##prcomp by default centers the variables to have mean zero
+##scale = TRUE standardizes variable i.e. standard deviation = 1
+pr.out=prcomp(USArrests,scale=TRUE)
+
+names(pr.out)
+
+pr.out$center
+
+pr.out$scale
+
+pr.out$scale^2
+
+##The following is a matrix
+##It give PC Loadings (directions)
+##Matrix-multiplying X matrix by pr.out$rotation gives coordinates of the data in the rotated coordinate
+##produces minimum of (n-1,p) PCAs
+pr.out$rotation
+
+
+##dimension of x from prcomp function
+## min(n-1,p) Principal Components
+dim(pr.out$x)
+
+
+biplot(pr.out,scale=0)
+
+##sign of PCAs can be changed
+pr.out$rotation = -pr.out$rotation
+
+pr.out$x=-pr.out$x
+
+biplot(pr.out,scale=0)
+
+##prcomp function also outputs standard deviation of each principal component
+pr.out$sdev
+
+pr.var=pr.out$sdev^2
+
+pr.var
+
+##variance in each PC
+pve=pr.var/sum(pr.var)
+
+pve
+
+##Scree Plot
+plot(pve,xlab="principal Component", ylab="Proportion of Variance Explained", ylim=c(0,1),type='b')
+
+## Cumulative proportions
+plot(cumsum(pve),xlab="principal components", ylab="Cumulative Proportion of Variance Explained", ylim=c(0,1),type='b')
+
+##cumsum is a function to calculate cumulative sum
+a=c(1,2,3,4)
+cumsum(a)
+
+
+```
+

@@ -1,0 +1,24 @@
+---
+title: "Lab15-NeuralNets"
+author: "DuraiSundaramoorthi"
+
+output: pdf_document
+---
+
+```
+library(neuralnet)
+
+df <- read.csv("C:/MKT500S/Butter.csv")
+
+df
+
+nn <- neuralnet(Like ~ Salt + Fat, data = df, linear.output = F, hidden = 3)
+
+nn$weights
+
+plot(nn, rep="best")
+
+prediction(nn)
+
+```
+

@@ -1,0 +1,57 @@
+---
+title: "Lab17-NaiveBayes"
+author: "DuraiSundaramoorthi"
+output: pdf_document
+---
+
+```
+library(e1071)
+
+delays.df <- read.csv("C:/MKT500S/FlightDelays.csv")
+
+names(delays.df)
+
+dim(delays.df)
+
+fix(delays.df)
+
+# change to Factors
+
+delays.df$DAY_WEEK <- factor(delays.df$DAY_WEEK)
+
+delays.df$Dep_Time <- factor(delays.df$Dep_Time)
+
+delays.df$Weather <- factor(delays.df$Weather)
+
+
+# Create training and validation sets.
+
+selected.var <- c(1, 2, 3, 4, 5, 6, 7)
+
+train.index <- sample(c(1:dim(delays.df)[1]), dim(delays.df)[1]*0.6)
+
+train.df <- delays.df[train.index, selected.var]
+
+valid.df <- delays.df[-train.index, selected.var]
+
+
+# run naive bayes
+delays.nb <- naiveBayes(Flight.Status ~ ., data = train.df)
+
+delays.nb
+
+# predicting probabilities
+
+pred.prob <- predict(delays.nb, newdata = valid.df, type = "raw")
+
+# predicting class membership
+
+pred.class <- predict(delays.nb, newdata = valid.df)
+
+
+library(caret)
+
+confusionMatrix(pred.class, valid.df$Flight.Status)
+
+```
+
